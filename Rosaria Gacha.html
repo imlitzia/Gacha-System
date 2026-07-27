@@ -1437,6 +1437,106 @@ a{ color: var(--accent-2); }
   var revealState = { total:0, revealed:0 };
   var revealGen = 0;
   var TIER_RANK = { S:3, A:2, B:1 };
+  var audioContext = null;
+  var tierAudioFiles = {
+    S: ['s-tier.mp3', 's-tier.wav', 's-tier.ogg', 's.mp3', 's.wav', 's.ogg'],
+    A: ['a-tier.mp3', 'a-tier.wav', 'a-tier.ogg', 'a.mp3', 'a.wav', 'a.ogg'],
+    B: ['b-tier.mp3', 'b-tier.wav', 'b-tier.ogg', 'b.mp3', 'b.wav', 'b.ogg']
+  };
+  var tierAudioCache = { S:null, A:null, B:null };
+
+  function ensureAudioContext(){
+    if(audioContext) return audioContext;
+    var AudioCtor = window.AudioContext || window.webkitAudioContext;
+    if(!AudioCtor) return null;
+    audioContext = new AudioCtor();
+    if(audioContext.state === 'suspended'){ audioContext.resume(); }
+    return audioContext;
+  }
+
+  function playTone(ctx, frequency, duration, type, gainValue, slideTo){
+    var now = ctx.currentTime;
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.type = type || 'sine';
+    osc.frequency.setValueAtTime(frequency, now);
+    if(slideTo){ osc.frequency.exponentialRampToValueAtTime(slideTo, now + duration); }
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(gainValue, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration + 0.06);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(now);
+    osc.stop(now + duration + 0.07);
+  }
+
+  function loadTierAudio(tier){
+    if(tierAudioCache[tier]) return tierAudioCache[tier];
+    var candidates = tierAudioFiles[tier] || [];
+    for(var i=0;i<candidates.length;i++){
+      var audio = new Audio(candidates[i]);
+      audio.preload = 'auto';
+      var idx = i;
+      audio.addEventListener('canplaythrough', function(){
+        if(!tierAudioCache[tier]) tierAudioCache[tier] = this;
+      }, { once:true });
+      audio.addEventListener('error', function(){
+        if(!tierAudioCache[tier] && idx === candidates.length - 1){ tierAudioCache[tier] = false; }
+      }, { once:true });
+      audio.load();
+      if(audio.readyState >= 2){
+        tierAudioCache[tier] = audio;
+        return audio;
+      }
+    }
+    tierAudioCache[tier] = false;
+    return null;
+  }
+
+  function playTierSound(tier){
+    var audio = tierAudioCache[tier] || loadTierAudio(tier);
+    if(audio && audio !== false){
+      try{
+        audio.currentTime = 0;
+        var playPromise = audio.play();
+        if(playPromise && typeof playPromise.catch === 'function'){
+          playPromise.catch(function(){
+            var ctx = ensureAudioContext();
+            if(!ctx) return;
+            if(tier === 'S'){
+              playTone(ctx, 784, 0.22, 'sine', 0.045, 1046);
+              setTimeout(function(){ playTone(ctx, 1175, 0.18, 'triangle', 0.03, 1397); }, 65);
+              setTimeout(function(){ playTone(ctx, 1568, 0.13, 'sine', 0.02, 1760); }, 120);
+            }
+            else if(tier === 'A'){
+              playTone(ctx, 659, 0.18, 'sine', 0.035, 880);
+              setTimeout(function(){ playTone(ctx, 880, 0.14, 'triangle', 0.025, 987); }, 50);
+            }
+            else{
+              playTone(ctx, 523, 0.14, 'triangle', 0.025, 659);
+            }
+          });
+        }
+        return;
+      }
+      catch(e){}
+    }
+
+    var ctx = ensureAudioContext();
+    if(!ctx) return;
+    if(tier === 'S'){
+      playTone(ctx, 784, 0.22, 'sine', 0.045, 1046);
+      setTimeout(function(){ playTone(ctx, 1175, 0.18, 'triangle', 0.03, 1397); }, 65);
+      setTimeout(function(){ playTone(ctx, 1568, 0.13, 'sine', 0.02, 1760); }, 120);
+    }
+    else if(tier === 'A'){
+      playTone(ctx, 659, 0.18, 'sine', 0.035, 880);
+      setTimeout(function(){ playTone(ctx, 880, 0.14, 'triangle', 0.025, 987); }, 50);
+    }
+    else{
+      playTone(ctx, 523, 0.14, 'triangle', 0.025, 659);
+    }
+  }
 
   function spawnBurst(container){
     for(var i=0;i<10;i++){
@@ -1458,6 +1558,7 @@ a{ color: var(--accent-2); }
     var card = inner.closest('.flip-card');
     card.classList.add('pop');
     if(inner.dataset.tier === 'S') spawnBurst(card);
+    playTierSound(inner.dataset.tier);
   }
 
   function revealAll(){
