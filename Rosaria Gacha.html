@@ -243,7 +243,7 @@ a{ color: var(--accent-2); }
 .reveal-grid{ position:relative; z-index:1; display:grid; grid-template-columns: repeat(5, minmax(110px,150px)); gap:16px; margin:auto 0; }
 .reveal-grid.single{ grid-template-columns: minmax(180px,240px); }
 
-.flip-card{ position:relative; perspective: 1000px; opacity:0; transform: translateY(14px) scale(.92); animation: card-arrive .5s ease forwards; }
+.flip-card{ position:relative; -webkit-perspective: 1000px; perspective: 1000px; opacity:0; transform: translateY(14px) scale(.92); animation: card-arrive .5s ease forwards; }
 .flip-card::before{
   content:""; position:absolute; inset:-16%; z-index:5; border-radius:50%;
   border:2px solid rgba(255,255,255,0.6); opacity:0; transform:scale(.4); pointer-events:none;
@@ -253,11 +253,11 @@ a{ color: var(--accent-2); }
 .flip-card:has(.flip-inner[data-tier="A"]).pop::before{ border-color: var(--gold-soft); box-shadow: 0 0 24px 2px var(--gold); }
 .flip-card:has(.flip-inner[data-tier="B"]).pop::before{ border-color: var(--steel-soft); }
 .flip-inner{
-  position:relative; width:100%; aspect-ratio:3/4.15; transform-style: preserve-3d;
-  transition: transform .7s cubic-bezier(.2,.7,.3,1.3);
+  position:relative; width:100%; aspect-ratio:3/4.15; -webkit-transform-style: preserve-3d; transform-style: preserve-3d;
+  transition: -webkit-transform .7s cubic-bezier(.2,.7,.3,1.3); transition: transform .7s cubic-bezier(.2,.7,.3,1.3);
 }
-.flip-inner.revealed{ transform: rotateY(180deg); }
-.flip-face{ position:absolute; inset:0; backface-visibility:hidden; border-radius: var(--radius); overflow:hidden; }
+.flip-inner.revealed{ -webkit-transform: rotateY(180deg); transform: rotateY(180deg); }
+.flip-face{ position:absolute; inset:0; -webkit-backface-visibility:hidden; backface-visibility:hidden; border-radius: var(--radius); overflow:hidden; }
 .flip-face.flip-back{
   display:flex; align-items:center; justify-content:center;
   background: linear-gradient(150deg, #2a2033, #120d17);
@@ -269,7 +269,7 @@ a{ color: var(--accent-2); }
   background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.35) 50%, transparent 65%);
   background-size: 240% 240%; animation: sheen-sweep 2.6s ease-in-out infinite;
 }
-.flip-face.flip-front{ transform: rotateY(180deg); }
+.flip-face.flip-front{ -webkit-transform: rotateY(180deg); transform: rotateY(180deg); }
 
 .continue-row{ position:relative; z-index:1; margin-top:30px; display:flex; justify-content:center; }
 
@@ -297,6 +297,58 @@ a{ color: var(--accent-2); }
   .header-row{ gap:12px; }
   .stat-chips{ order:3; width:100%; justify-content:center; }
 }
+
+/* ---------- account / auth ---------- */
+.account-area{ display:flex; align-items:center; }
+.account-btn{
+  cursor:pointer; display:flex; align-items:center; gap:8px;
+  padding:7px 14px; border:1px solid var(--line); border-radius: 999px; background: var(--panel);
+  font-family: var(--font-body); font-size:12.5px; color: var(--ink); max-width:180px;
+}
+.account-btn:hover{ border-color: var(--line-strong); }
+.account-btn .dot{ width:7px; height:7px; border-radius:50%; background: var(--ink-faint); flex:none; }
+.account-btn.signed-in .dot{ background: var(--holo-d); }
+.account-btn span.who{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.overlay.auth-overlay{ z-index:120; align-items:center; justify-content:center; }
+.auth-card{
+  position:relative; width:100%; max-width:360px; background: var(--panel);
+  border:1px solid var(--line-strong); border-radius: var(--radius); padding:28px 26px;
+  box-shadow: var(--shadow-lift);
+}
+.auth-card h2{ margin:0 0 4px; font-family: var(--font-display); font-size:1.6em; color: var(--ink); }
+.auth-sub{ margin:0 0 18px; font-family: var(--font-body); font-size:12.5px; color: var(--ink-dim); }
+.auth-tabs{ display:flex; gap:6px; margin-bottom:16px; }
+.auth-tab{
+  flex:1; cursor:pointer; border:1px solid var(--line); background: var(--panel-2); color: var(--ink-dim);
+  border-radius: var(--radius-sm); padding:8px; font-family: var(--font-ui); font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
+}
+.auth-tab.active{ background: linear-gradient(135deg, var(--accent), #7a2350); color:#fff; border-color: transparent; }
+.auth-field{ display:flex; flex-direction:column; gap:4px; margin-bottom:12px; }
+.auth-field label{ font-family: var(--font-body); font-size:11px; color: var(--ink-dim); }
+.auth-field input{
+  font-family: var(--font-body); font-size:14px; color: var(--ink); background: var(--bg-deep);
+  border:1px solid var(--line); border-radius: var(--radius-sm); padding:10px 12px; outline:none;
+}
+.auth-field input:focus{ border-color: var(--accent); }
+.auth-error{ min-height:16px; margin:2px 0 12px; font-family: var(--font-body); font-size:12px; color:#ff8fa8; }
+.auth-submit{
+  width:100%; cursor:pointer; border:none; border-radius:999px; padding:12px;
+  font-family: var(--font-ui); font-size:12.5px; letter-spacing:0.12em; text-transform:uppercase;
+  color:#fff5f8; background: linear-gradient(135deg, var(--accent), #7a2350);
+}
+.auth-submit[disabled]{ opacity:0.55; cursor:default; }
+.auth-guest{
+  display:block; width:100%; text-align:center; margin-top:12px; background:none; border:none;
+  font-family: var(--font-body); font-size:12px; color: var(--ink-faint); cursor:pointer; text-decoration:underline;
+}
+.auth-close{
+  position:absolute; top:12px; right:14px; background:none; border:none; color: var(--ink-faint);
+  font-size:20px; line-height:1; cursor:pointer;
+}
+.auth-notice{
+  margin:0 0 14px; padding:8px 10px; border-radius: var(--radius-sm); background: rgba(217,164,65,0.1);
+  border:1px solid rgba(217,164,65,0.3); font-family: var(--font-body); font-size:11.5px; color: var(--gold-soft);
+}
 </style>
 
 <div class="site-header">
@@ -312,6 +364,11 @@ a{ color: var(--accent-2); }
     <div class="stat-chips">
       <div class="chip"><b id="stat-pulls">0</b><span>Summons</span></div>
       <div class="chip"><b id="stat-owned">0 / 32</b><span>Collected</span></div>
+    </div>
+    <div class="account-area">
+      <button class="account-btn" id="account-btn" type="button">
+        <span class="dot"></span><span class="who" id="account-btn-label">Sign In</span>
+      </button>
     </div>
   </div>
 </div>
@@ -376,6 +433,32 @@ a{ color: var(--accent-2); }
   <p class="overlay-hint" id="overlay-hint">Tap to reveal</p>
   <div class="reveal-grid" id="reveal-grid"></div>
   <div class="continue-row"><button class="pull-btn" id="btn-continue" style="display:none;">Continue</button></div>
+</div>
+
+<div class="overlay auth-overlay" id="auth-overlay" role="dialog" aria-modal="true" aria-label="Sign in">
+  <div class="auth-card">
+    <button class="auth-close" id="auth-close" type="button" aria-label="Close">×</button>
+    <h2 id="auth-title">Welcome</h2>
+    <p class="auth-sub" id="auth-sub">Sign in to save your collection to your account and pick it up from any device.</p>
+    <div class="auth-notice" id="auth-notice" style="display:none;"></div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="auth-tab-login" type="button" data-mode="login">Log In</button>
+      <button class="auth-tab" id="auth-tab-signup" type="button" data-mode="signup">Sign Up</button>
+    </div>
+    <form id="auth-form">
+      <div class="auth-field">
+        <label for="auth-email">Email</label>
+        <input type="email" id="auth-email" autocomplete="email" required>
+      </div>
+      <div class="auth-field">
+        <label for="auth-password">Password</label>
+        <input type="password" id="auth-password" autocomplete="current-password" required minlength="6">
+      </div>
+      <p class="auth-error" id="auth-error"></p>
+      <button class="auth-submit" id="auth-submit" type="submit">Log In</button>
+    </form>
+    <button class="auth-guest" id="auth-signout" type="button" style="display:none;">Log out</button>
+  </div>
 </div>
 
 <script>
@@ -1310,7 +1393,19 @@ a{ color: var(--accent-2); }
   }
   function saveState(){
     try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+    if(window.RosariaCloud && window.RosariaCloud.isSignedIn()) window.RosariaCloud.saveCollection(state);
   }
+
+  window.addEventListener('rosaria-auth-changed', function(e){
+    if(!e.detail.user){ return; }
+    window.RosariaCloud.loadCollection().then(function(cloud){
+      if(!cloud) return;
+      state = { pulls: cloud.pulls || 0, owned: cloud.owned || {} };
+      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(err){}
+      renderStats();
+      renderCollection();
+    });
+  });
 
   function pickTier(){
     var r = Math.random()*100;
@@ -1655,5 +1750,177 @@ a{ color: var(--accent-2); }
 
   renderStats();
   renderCollection();
+})();
+</script>
+
+<script type="module">
+(function(){
+  "use strict";
+
+  // ====== Firebase project config ======
+  // 1. Go to https://console.firebase.google.com and create a free project.
+  // 2. In the project, click the "</>" (web app) icon to register a web app
+  //    and copy the firebaseConfig object it gives you into the object below.
+  // 3. In the left sidebar go to Build > Authentication > Get started, and
+  //    enable the "Email/Password" sign-in provider.
+  // 4. In the left sidebar go to Build > Firestore Database > Create database
+  //    (production mode is fine), then in the Rules tab paste:
+  //      rules_version = '2';
+  //      service cloud.firestore {
+  //        match /databases/{database}/documents {
+  //          match /users/{userId} {
+  //            allow read, write: if request.auth != null && request.auth.uid == userId;
+  //          }
+  //        }
+  //      }
+  // Until this config is filled in, the page runs in local-only guest mode.
+  var firebaseConfig = {
+    apiKey: "AIzaSyC70GZ-g6G411N-V3DEIiaGMfOMfFgcnl8",
+    authDomain: "gacha-system-df989.firebaseapp.com",
+    projectId: "gacha-system-df989",
+    storageBucket: "gacha-system-df989.firebasestorage.app",
+    messagingSenderId: "565534710482",
+    appId: "1:565534710482:web:85f55a298e9de1a43b6b0b"
+  };
+  var cloudEnabled = firebaseConfig.apiKey.indexOf('YOUR_') !== 0;
+
+  var auth, db, doc, getDoc, setDoc, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged;
+  var currentUser = null;
+  var readyPromise = Promise.resolve();
+
+  if(cloudEnabled){
+    readyPromise = Promise.all([
+      import("https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js"),
+      import("https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js"),
+      import("https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js")
+    ]).then(function(mods){
+      var appMod = mods[0], authMod = mods[1], fsMod = mods[2];
+      var app = appMod.initializeApp(firebaseConfig);
+      auth = authMod.getAuth(app);
+      db = fsMod.getFirestore(app);
+      doc = fsMod.doc; getDoc = fsMod.getDoc; setDoc = fsMod.setDoc;
+      signInWithEmailAndPassword = authMod.signInWithEmailAndPassword;
+      createUserWithEmailAndPassword = authMod.createUserWithEmailAndPassword;
+      signOut = authMod.signOut;
+      onAuthStateChanged = authMod.onAuthStateChanged;
+
+      onAuthStateChanged(auth, function(user){
+        currentUser = user;
+        accountBtn.classList.toggle('signed-in', !!user);
+        accountLabel.textContent = user ? user.email : 'Sign In';
+        authSignout.style.display = user ? '' : 'none';
+        authForm.style.display = user ? 'none' : '';
+        authTabs.style.display = user ? 'none' : '';
+        authTitle.textContent = user ? 'Signed in' : 'Welcome';
+        authSub.textContent = user
+          ? ('Signed in as ' + user.email + '. Your collection syncs to this account automatically.')
+          : 'Sign in to save your collection to your account and pick it up from any device.';
+        window.dispatchEvent(new CustomEvent('rosaria-auth-changed', { detail: { user: user } }));
+      });
+    }).catch(function(){
+      cloudEnabled = false;
+    });
+  }
+
+  var accountBtn = document.getElementById('account-btn');
+  var accountLabel = document.getElementById('account-btn-label');
+  var authOverlay = document.getElementById('auth-overlay');
+  var authClose = document.getElementById('auth-close');
+  var authForm = document.getElementById('auth-form');
+  var authEmail = document.getElementById('auth-email');
+  var authPassword = document.getElementById('auth-password');
+  var authError = document.getElementById('auth-error');
+  var authSubmit = document.getElementById('auth-submit');
+  var authNotice = document.getElementById('auth-notice');
+  var authSignout = document.getElementById('auth-signout');
+  var tabLogin = document.getElementById('auth-tab-login');
+  var tabSignup = document.getElementById('auth-tab-signup');
+  var authTitle = document.getElementById('auth-title');
+  var authSub = document.getElementById('auth-sub');
+  var authTabs = document.querySelector('.auth-tabs');
+  var authMode = 'login';
+
+  function setAuthMode(mode){
+    authMode = mode;
+    tabLogin.classList.toggle('active', mode==='login');
+    tabSignup.classList.toggle('active', mode==='signup');
+    authSubmit.textContent = mode==='login' ? 'Log In' : 'Create Account';
+    authPassword.setAttribute('autocomplete', mode==='login' ? 'current-password' : 'new-password');
+    authError.textContent = '';
+  }
+  tabLogin.addEventListener('click', function(){ setAuthMode('login'); });
+  tabSignup.addEventListener('click', function(){ setAuthMode('signup'); });
+
+  function openAuth(){
+    authError.textContent = '';
+    if(!cloudEnabled){
+      authNotice.style.display = '';
+      authNotice.textContent = 'Cloud accounts are not configured on this copy of the page yet, so collections only save to this browser.';
+    } else {
+      authNotice.style.display = 'none';
+    }
+    authOverlay.classList.add('open');
+  }
+  function closeAuth(){ authOverlay.classList.remove('open'); }
+  authClose.addEventListener('click', closeAuth);
+  authOverlay.addEventListener('click', function(e){ if(e.target === authOverlay) closeAuth(); });
+  accountBtn.addEventListener('click', openAuth);
+
+  authSignout.addEventListener('click', function(){
+    if(!cloudEnabled || !signOut) return;
+    signOut(auth);
+    closeAuth();
+  });
+
+  function friendlyAuthError(err){
+    var code = (err && err.code) || '';
+    if(code.indexOf('email-already-in-use') !== -1) return 'That email already has an account, try Log In instead.';
+    if(code.indexOf('invalid-credential') !== -1 || code.indexOf('wrong-password') !== -1 || code.indexOf('user-not-found') !== -1) return 'Incorrect email or password.';
+    if(code.indexOf('weak-password') !== -1) return 'Password must be at least 6 characters.';
+    if(code.indexOf('invalid-email') !== -1) return 'That email address looks invalid.';
+    if(code.indexOf('network-request-failed') !== -1) return 'Network error, check your connection.';
+    return 'Something went wrong. Please try again.';
+  }
+
+  authForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    if(!cloudEnabled){ authError.textContent = 'Cloud accounts are not configured yet.'; return; }
+    var email = authEmail.value.trim();
+    var password = authPassword.value;
+    authSubmit.disabled = true;
+    authError.textContent = '';
+    readyPromise.then(function(){
+      var task = authMode === 'login'
+        ? signInWithEmailAndPassword(auth, email, password)
+        : createUserWithEmailAndPassword(auth, email, password);
+      return task;
+    }).then(function(){
+      authSubmit.disabled = false;
+      authForm.reset();
+      closeAuth();
+    }).catch(function(err){
+      authSubmit.disabled = false;
+      authError.textContent = friendlyAuthError(err);
+    });
+  });
+
+  window.RosariaCloud = {
+    isEnabled: function(){ return cloudEnabled; },
+    isSignedIn: function(){ return !!currentUser; },
+    saveCollection: function(state){
+      if(!cloudEnabled || !currentUser || !db) return;
+      setDoc(doc(db, 'users', currentUser.uid), {
+        pulls: state.pulls,
+        owned: state.owned,
+        updatedAt: Date.now()
+      }).catch(function(){});
+    },
+    loadCollection: function(){
+      if(!cloudEnabled || !currentUser || !db) return Promise.resolve(null);
+      return getDoc(doc(db, 'users', currentUser.uid)).then(function(snap){
+        return snap.exists() ? snap.data() : { pulls:0, owned:{} };
+      }).catch(function(){ return null; });
+    }
+  };
 })();
 </script>
